@@ -1,93 +1,254 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>yasashi studio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PORTFOLIO | 先锋作品集</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-  <style>
-    body {
-      margin: 0;
-      background: #000;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      overflow-x: hidden;
-    }
+    <style>
+        /* --- 核心 CSS 变量与重置 --- */
+        :root {
+            --bg: #0a0a0a;
+            --text: #eeeeee;
+            --accent: #ccff00; /* 先锋酸性绿 */
+        }
 
-    .hero {
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 5vw;
-      letter-spacing: 5px;
-      text-transform: uppercase;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* 隐藏默认鼠标，使用我们自定义的前卫光标 */
+        }
 
-    .section {
-      padding: 100px 10%;
-      border-top: 1px solid #222;
-    }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', -apple-system, sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
+        /* --- 自定义先锋光标 --- */
+        .custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference; /* 核心交互：颜色反转 */
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease;
+        }
 
-    .card {
-      background: #111;
-      padding: 40px;
-      transition: 0.4s;
-      cursor: pointer;
-    }
+        /* --- 导航栏 --- */
+        nav {
+            padding: 2vw 4vw;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        nav div {
+            overflow: hidden; /* 用于 GSAP 文字进场动画 */
+        }
 
-    .card:hover {
-      background: #fff;
-      color: #000;
-      transform: translateY(-10px);
-    }
+        /* --- 首屏 Hero 区域 --- */
+        .hero {
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 4vw;
+        }
 
-    .footer {
-      text-align: center;
-      padding: 50px;
-      opacity: 0.5;
-    }
+        .hero-line {
+            overflow: hidden;
+        }
 
-    @media (max-width: 768px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-      .hero {
-        font-size: 10vw;
-      }
-    }
-  </style>
+        .hero h1 {
+            font-size: 12vw;
+            line-height: 0.85;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.04em;
+            white-space: nowrap;
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+        }
+
+        /* --- 作品列表区域 --- */
+        .work-section {
+            padding: 10vw 4vw;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            text-transform: uppercase;
+            margin-bottom: 4vw;
+            border-bottom: 1px solid rgba(238, 238, 238, 0.2);
+            padding-bottom: 1vw;
+        }
+
+        .project-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3vw 0;
+            border-bottom: 1px solid rgba(238, 238, 238, 0.1);
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .project-name {
+            font-size: 6vw;
+            font-weight: 500;
+            text-transform: uppercase;
+            transition: transform 0.4s ease;
+        }
+
+        .project-role {
+            font-size: 1.2rem;
+            opacity: 0.5;
+            transition: opacity 0.4s ease;
+        }
+
+        /* 悬停时的先锋动效 */
+        .project-item:hover {
+            border-bottom: 1px solid var(--accent);
+        }
+        
+        .project-item:hover .project-name {
+            transform: translateX(3vw) skewX(-5deg); /* 文字产生先锋错位感 */
+            color: var(--accent);
+        }
+
+        .project-item:hover .project-role {
+            opacity: 1;
+        }
+
+        /* --- 底部 --- */
+        footer {
+            padding: 10vw 4vw 4vw;
+            text-align: center;
+            font-size: 8vw;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        footer a {
+            color: var(--text);
+            text-decoration: none;
+            display: inline-block;
+            transition: color 0.3s;
+        }
+        footer a:hover {
+            color: var(--accent);
+        }
+    </style>
 </head>
-
 <body>
 
-  <div class="hero">
-    MAKE / BREAK
-  </div>
+    <div class="custom-cursor"></div>
 
-  <div class="section">
-    <h2>Works</h2>
-    <div class="grid">
-      <div class="card">Project 01</div>
-      <div class="card">Project 02</div>
-      <div class="card">Project 03</div>
-    </div>
-  </div>
+    <nav>
+        <div><span class="nav-text">Creative Dev</span></div>
+        <div><span class="nav-text">2026 ©</span></div>
+    </nav>
 
-  <div class="section">
-    <h2>About</h2>
-    <p>yasashi studio — breaking and rebuilding visual systems.</p>
-  </div>
+    <section class="hero">
+        <div class="hero-line"><h1 class="hero-text">Design</h1></div>
+        <div class="hero-line"><h1 class="hero-text">Beyond</h1></div>
+        <div class="hero-line"><h1 class="hero-text"><span>Boundaries.</span></h1></div>
+    </section>
 
-  <div class="footer">
-    © 2026 yasashi studio
-  </div>
+    <section class="work-section">
+        <div class="section-title">Selected Works</div>
+        
+        <a href="#" class="project-item">
+            <div class="project-name">01. Neural Network</div>
+            <div class="project-role">Web Design</div>
+        </a>
+        <a href="#" class="project-item">
+            <div class="project-name">02. Abstract Void</div>
+            <div class="project-role">3D Concept</div>
+        </a>
+        <a href="#" class="project-item">
+            <div class="project-name">03. Cybernetic UI</div>
+            <div class="project-role">App Dev</div>
+        </a>
+    </section>
 
+    <footer>
+        <a href="mailto:hello@example.com" class="footer-link">Let's Talk</a>
+    </footer>
+
+    <script>
+        // 1. 自定义光标跟随与交互变化
+        const cursor = document.querySelector('.custom-cursor');
+        
+        document.addEventListener('mousemove', (e) => {
+            // 使用 requestAnimationFrame 或直接设置位置，这里追求轻量
+            cursor.style.transform = `translate(calc(${e.clientX}px - 50%), calc(${e.clientY}px - 50%))`;
+        });
+
+        // 当鼠标悬停在可点击元素上时，光标放大，增强交互反馈
+        const hoverTargets = document.querySelectorAll('a, .project-item');
+        hoverTargets.forEach(target => {
+            target.addEventListener('mouseenter', () => {
+                cursor.style.width = '80px';
+                cursor.style.height = '80px';
+            });
+            target.addEventListener('mouseleave', () => {
+                cursor.style.width = '24px';
+                cursor.style.height = '24px';
+            });
+        });
+
+        // 2. GSAP 进场动画
+        // 导航栏文字滑入
+        gsap.from(".nav-text", {
+            y: "100%",
+            duration: 1,
+            ease: "power4.out",
+            delay: 0.2
+        });
+
+        // 首屏巨型文字错落出现
+        gsap.from(".hero-text", {
+            y: "110%",
+            duration: 1.2,
+            stagger: 0.15, // 文字错开出现
+            ease: "power4.out",
+            delay: 0.4
+        });
+
+        // 3. GSAP 滚动触发动画
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 作品列表淡入并稍微上移
+        gsap.utils.toArray('.project-item').forEach((item, i) => {
+            gsap.from(item, {
+                scrollTrigger: {
+                    trigger: item,
+                    start: "top 90%", // 当元素顶部到达视口 90% 时触发
+                },
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.out"
+            });
+        });
+    </script>
 </body>
 </html>
