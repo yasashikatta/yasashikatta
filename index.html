@@ -3,250 +3,1235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PORTFOLIO | 先锋作品集</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>ANTI-PORTFOLIO | 先锋 / 破坏 / 实验</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@300;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <style>
-        /* --- 核心 CSS 变量与重置 --- */
         :root {
-            --bg: #0a0a0a;
-            --text: #eeeeee;
-            --accent: #ccff00; /* 先锋酸性绿 */
+            --bg: #050505;
+            --bg-soft: #0b0b0f;
+            --text: #f5f5f5;
+            --muted: rgba(255,255,255,0.72);
+            --line: rgba(255,255,255,0.14);
+            --accent-1: #ff2b6e;
+            --accent-2: #00e5ff;
+            --accent-3: #b4ff39;
+            --accent-4: #8b5cf6;
+            --font-main: 'Syne', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --hero-size: clamp(5.2rem, 15vw, 14rem);
+            --hero-letter: clamp(-0.09em, -0.05em, -0.03em);
+            --content-width: min(1400px, 100%);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            cursor: none; /* 隐藏默认鼠标，使用我们自定义的前卫光标 */
+            cursor: none;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
         }
 
         body {
-            background-color: var(--bg);
+            background:
+                radial-gradient(circle at 18% 20%, rgba(255,43,110,0.12), transparent 28%),
+                radial-gradient(circle at 78% 18%, rgba(0,229,255,0.14), transparent 24%),
+                radial-gradient(circle at 50% 80%, rgba(139,92,246,0.12), transparent 30%),
+                var(--bg);
             color: var(--text);
-            font-family: 'Space Grotesk', -apple-system, sans-serif;
-            overflow-x: hidden;
+            font-family: var(--font-mono);
+            overflow-x: clip;
             -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
         }
 
-        /* --- 自定义先锋光标 --- */
-        .custom-cursor {
+        body::before {
+            content: "";
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 24px;
-            height: 24px;
-            background-color: var(--accent);
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px),
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+            background-size: 80px 80px, 80px 80px, 220px 220px;
+            opacity: 0.075;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 35%, transparent 65%, rgba(255,255,255,0.02));
+            mix-blend-mode: screen;
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        ::selection {
+            background: var(--accent-3);
+            color: #000;
+        }
+
+        .site-wrap {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cursor {
+            position: fixed;
+            width: 26px;
+            height: 26px;
+            background: var(--text);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            mix-blend-mode: difference;
+            transition: width 0.25s, height 0.25s, background 0.25s, border-radius 0.25s;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 42px;
+            height: 42px;
+            border: 1.5px solid var(--accent-2);
             border-radius: 50%;
             pointer-events: none;
             z-index: 9999;
-            mix-blend-mode: difference; /* 核心交互：颜色反转 */
             transform: translate(-50%, -50%);
-            transition: width 0.3s ease, height 0.3s ease;
+            opacity: 0.7;
+            filter: drop-shadow(0 0 12px rgba(0,229,255,0.5));
         }
 
-        /* --- 导航栏 --- */
-        nav {
-            padding: 2vw 4vw;
-            display: flex;
-            justify-content: space-between;
-            font-size: 1.2rem;
-            font-weight: 500;
+        .g-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 34px;
+            border: 1px solid var(--text);
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-        }
-        
-        nav div {
-            overflow: hidden; /* 用于 GSAP 文字进场动画 */
-        }
-
-        /* --- 首屏 Hero 区域 --- */
-        .hero {
-            height: 80vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 0 4vw;
+            text-decoration: none;
+            color: var(--text);
+            position: relative;
+            transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease, background 0.28s ease;
+            background: rgba(255,255,255,0.02);
+            backdrop-filter: blur(4px);
         }
 
-        .hero-line {
+        .g-button::after {
+            content: '↗';
+            font-size: 1rem;
+        }
+
+        .g-button:hover {
+            background: var(--accent-1);
+            border-color: var(--accent-1);
+            box-shadow: 8px 8px 0 var(--accent-2), -8px -8px 0 rgba(180,255,57,0.18);
+            transform: translate(-4px, -4px) skewX(-4deg);
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(5,5,5,0.72);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--line);
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            padding: 10px 0;
+        }
+
+        .marquee-wrapper {
             overflow: hidden;
-        }
-
-        .hero h1 {
-            font-size: 12vw;
-            line-height: 0.85;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: -0.04em;
+            display: flex;
             white-space: nowrap;
         }
 
-        .hero h1 span {
-            color: var(--accent);
-        }
-
-        /* --- 作品列表区域 --- */
-        .work-section {
-            padding: 10vw 4vw;
-        }
-
-        .section-title {
-            font-size: 1rem;
-            text-transform: uppercase;
-            margin-bottom: 4vw;
-            border-bottom: 1px solid rgba(238, 238, 238, 0.2);
-            padding-bottom: 1vw;
-        }
-
-        .project-item {
+        .marquee {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 3vw 0;
-            border-bottom: 1px solid rgba(238, 238, 238, 0.1);
-            text-decoration: none;
+            min-width: max-content;
+            animation: marquee 20s linear infinite;
+        }
+
+        .marquee span {
+            padding: 0 4vw;
             color: var(--text);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0.84;
+            letter-spacing: 0.08em;
+            font-size: clamp(0.75rem, 1vw, 0.95rem);
         }
 
-        .project-name {
-            font-size: 6vw;
-            font-weight: 500;
+        .marquee span.highlight {
+            color: var(--accent-1);
+            font-weight: 700;
+            text-shadow: 0 0 12px rgba(255,43,110,0.45);
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .hero {
+            min-height: 100svh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 90px 5vw 8vh;
+            position: relative;
+            isolation: isolate;
+        }
+
+        .hero-grid {
+            width: var(--content-width);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 20px;
+        }
+
+        .hero-kicker {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.8rem;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
-            transition: transform 0.4s ease;
+            color: var(--muted);
+            margin-bottom: 8px;
         }
 
-        .project-role {
-            font-size: 1.2rem;
-            opacity: 0.5;
-            transition: opacity 0.4s ease;
+        .hero-kicker::before {
+            content: "";
+            width: 48px;
+            height: 1px;
+            background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
         }
 
-        /* 悬停时的先锋动效 */
-        .project-item:hover {
-            border-bottom: 1px solid var(--accent);
-        }
-        
-        .project-item:hover .project-name {
-            transform: translateX(3vw) skewX(-5deg); /* 文字产生先锋错位感 */
-            color: var(--accent);
+        .hero-title-wrap {
+            position: relative;
+            width: 100%;
         }
 
-        .project-item:hover .project-role {
+        .hero h1 {
+            font-family: var(--font-main);
+            font-size: var(--hero-size);
+            line-height: 0.82;
+            letter-spacing: var(--hero-letter);
+            text-transform: uppercase;
+            position: relative;
+            display: block;
+            width: fit-content;
+            max-width: 100%;
+            white-space: nowrap;
+            transform-origin: left center;
+            filter: drop-shadow(0 0 24px rgba(255,255,255,0.05));
+        }
+
+        .hero h1 + h1 {
+            margin-left: clamp(0.8rem, 11vw, 11rem);
+        }
+
+        .hero h1::before,
+        .hero h1::after {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        .hero h1::before {
+            color: var(--accent-2);
+            transform: translate(-3px, 2px);
+            z-index: -1;
+            animation: glitch-anim 2s infinite linear alternate-reverse;
+        }
+
+        .hero h1::after {
+            color: var(--accent-1);
+            transform: translate(3px, -2px);
+            z-index: -2;
+            animation: glitch-anim2 1.55s infinite linear alternate-reverse;
+        }
+
+        .hero-meta {
+            margin-top: clamp(30px, 5vw, 56px);
+            display: grid;
+            grid-template-columns: minmax(280px, 460px) minmax(220px, 1fr);
+            gap: clamp(24px, 4vw, 56px);
+            align-items: end;
+        }
+
+        .hero-sub {
+            font-size: clamp(0.98rem, 1.35vw, 1.16rem);
+            line-height: 1.8;
+            transform: skewX(-8deg);
+            color: rgba(255,255,255,0.94);
+            max-width: 38ch;
+        }
+
+        .hero-data {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .hero-data-card {
+            border: 1px solid var(--line);
+            padding: 16px 16px 18px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            min-height: 96px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-data-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(130deg, rgba(0,229,255,0.12), transparent 35%, rgba(255,43,110,0.12));
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .hero-data-card:hover::before { opacity: 1; }
+
+        .hero-data-label {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.55);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .hero-data-value {
+            margin-top: 12px;
+            font-family: var(--font-main);
+            font-size: clamp(1.3rem, 2vw, 2rem);
+            line-height: 0.95;
+            text-transform: uppercase;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip-path: inset(50% 0 30% 0); }
+            20% { clip-path: inset(10% 0 80% 0); }
+            40% { clip-path: inset(40% 0 40% 0); }
+            60% { clip-path: inset(80% 0 10% 0); }
+            80% { clip-path: inset(20% 0 60% 0); }
+            100% { clip-path: inset(60% 0 20% 0); }
+        }
+
+        @keyframes glitch-anim2 {
+            0% { clip-path: inset(10% 0 80% 0); }
+            20% { clip-path: inset(50% 0 30% 0); }
+            40% { clip-path: inset(80% 0 10% 0); }
+            60% { clip-path: inset(20% 0 60% 0); }
+            80% { clip-path: inset(60% 0 20% 0); }
+            100% { clip-path: inset(40% 0 40% 0); }
+        }
+
+        .works {
+            padding: 10vw 0 4vw;
+            position: relative;
+        }
+
+        .section-title-big {
+            font-family: var(--font-main);
+            font-size: clamp(5rem, 21vw, 17rem);
+            color: rgba(255,255,255,0.03);
+            position: absolute;
+            top: 0;
+            left: -2vw;
+            line-height: 0.84;
+            pointer-events: none;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .works-list {
+            position: relative;
+            z-index: 10;
+        }
+
+        .work-item {
+            display: block;
+            text-decoration: none;
+            border-bottom: 1px solid var(--line);
+            padding: 4vw 5vw;
+            position: relative;
+            overflow: hidden;
+            transition: padding-left 0.45s ease, background-color 0.45s ease;
+        }
+
+        .work-item::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(255,43,110,0.08), rgba(0,229,255,0.04) 45%, rgba(180,255,57,0.08));
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .work-item:hover {
+            padding-left: 9vw;
+            background-color: rgba(255,255,255,0.018);
+        }
+
+        .work-item:hover::before {
             opacity: 1;
         }
 
-        /* --- 底部 --- */
-        footer {
-            padding: 10vw 4vw 4vw;
-            text-align: center;
-            font-size: 8vw;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        footer a {
+        .work-title {
+            font-family: var(--font-main);
+            font-size: clamp(3rem, 8vw, 7.2rem);
             color: var(--text);
-            text-decoration: none;
-            display: inline-block;
-            transition: color 0.3s;
+            text-transform: uppercase;
+            line-height: 0.9;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 0 20px rgba(255,255,255,0.04);
         }
-        footer a:hover {
-            color: var(--accent);
+
+        .work-info {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: var(--text);
+            opacity: 0.68;
+            margin-top: 14px;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            position: relative;
+            z-index: 2;
+            letter-spacing: 0.04em;
+        }
+
+        .hover-reveal {
+            position: absolute;
+            width: min(28vw, 380px);
+            aspect-ratio: 3 / 4;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            overflow: hidden;
+            transform: translate(-50%, -50%) scale(0.5) rotate(-6deg);
+            z-index: 1;
+            transition: opacity 0.28s, visibility 0.28s, transform 0.38s cubic-bezier(0.23, 1, 0.32, 1);
+            border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+        }
+
+        .hover-reveal::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border: 1px solid rgba(255,43,110,0.7);
+            mix-blend-mode: screen;
+            transform: translate(6px, -6px);
+            z-index: 2;
+        }
+
+        .hover-reveal::after {
+            content: "SCAN";
+            position: absolute;
+            right: 12px;
+            bottom: 10px;
+            font-size: 0.74rem;
+            letter-spacing: 0.18em;
+            color: #fff;
+            z-index: 3;
+            opacity: 0.82;
+        }
+
+        .work-item:hover .hover-reveal {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1) rotate(-2deg);
+        }
+
+        .hover-reveal-img {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(100%) contrast(140%) saturate(80%);
+            transform: scale(1.18);
+            transition: transform 0.55s ease, filter 0.55s ease;
+        }
+
+        .work-item:hover .hover-reveal-img {
+            transform: scale(1);
+            filter: grayscale(15%) contrast(115%) saturate(115%);
+        }
+
+        .video-lab {
+            padding: 8vw 5vw 10vw;
+            position: relative;
+            overflow: clip;
+        }
+
+        .video-lab-inner {
+            width: var(--content-width);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 0.95fr 1.25fr;
+            gap: clamp(24px, 4vw, 56px);
+            align-items: start;
+        }
+
+        .video-intro {
+            position: sticky;
+            top: 96px;
+            align-self: start;
+        }
+
+        .video-kicker {
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--accent-3);
+            margin-bottom: 14px;
+        }
+
+        .video-title {
+            font-family: var(--font-main);
+            font-size: clamp(2.8rem, 8vw, 7rem);
+            line-height: 0.88;
+            letter-spacing: -0.06em;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+
+        .video-copy {
+            color: rgba(255,255,255,0.78);
+            max-width: 34ch;
+            line-height: 1.85;
+            font-size: 1rem;
+            margin-bottom: 28px;
+        }
+
+        .video-stack {
+            display: grid;
+            gap: 20px;
+        }
+
+        .video-card {
+            position: relative;
+            min-height: 68vh;
+            border: 1px solid var(--line);
+            overflow: hidden;
+            background: #0b0b0f;
+            transform-style: preserve-3d;
+        }
+
+        .video-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,43,110,0.14), transparent 35%, rgba(0,229,255,0.14) 72%, rgba(180,255,57,0.08));
+            z-index: 1;
+            opacity: 0.85;
+        }
+
+        .video-card::after {
+            content: "";
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 45%;
+            background: linear-gradient(180deg, transparent, rgba(0,0,0,0.86));
+            z-index: 1;
+        }
+
+        .video-media {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .video-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.06);
+            filter: contrast(1.08) brightness(0.78) saturate(1.12);
+            transition: transform 0.8s ease, filter 0.8s ease;
+        }
+
+        .video-card:hover .video-media img {
+            transform: scale(1.02);
+            filter: contrast(1.15) brightness(0.95) saturate(1.25);
+        }
+
+        .video-overlay {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            min-height: 68vh;
+            padding: clamp(22px, 3vw, 34px);
+        }
+
+        .video-chip-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .video-chip {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding: 8px 10px;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(0,0,0,0.28);
+            backdrop-filter: blur(4px);
+        }
+
+        .video-card-title {
+            font-family: var(--font-main);
+            font-size: clamp(2rem, 4.6vw, 4.4rem);
+            line-height: 0.9;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            max-width: 10ch;
+        }
+
+        .video-card-copy {
+            max-width: 40ch;
+            color: rgba(255,255,255,0.82);
+            line-height: 1.7;
+            font-size: 0.98rem;
+        }
+
+        .video-card-index {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            z-index: 2;
+            font-family: var(--font-main);
+            font-size: clamp(1.2rem, 3vw, 2.4rem);
+            color: rgba(255,255,255,0.9);
+            mix-blend-mode: screen;
+        }
+
+        .video-card-play {
+            position: absolute;
+            top: 22px;
+            left: 22px;
+            z-index: 2;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.3);
+            display: grid;
+            place-items: center;
+            background: rgba(0,0,0,0.28);
+            backdrop-filter: blur(6px);
+            transition: transform 0.28s ease, background 0.28s ease;
+        }
+
+        .video-card-play::before {
+            content: "▶";
+            font-size: 1rem;
+            transform: translateX(2px);
+        }
+
+        .video-card:hover .video-card-play {
+            transform: scale(1.08) rotate(-8deg);
+            background: rgba(255,43,110,0.35);
+        }
+
+        .video-progress {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 4px;
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            z-index: 3;
+            overflow: hidden;
+        }
+
+        .video-progress span {
+            display: block;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3));
+        }
+
+        .about {
+            min-height: 100vh;
+            padding: 10vw 5vw;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5vw;
+            align-items: center;
+        }
+
+        .about h2 {
+            font-family: var(--font-main);
+            font-size: clamp(3rem, 7vw, 6.5rem);
+            line-height: 0.9;
+            text-transform: uppercase;
+            margin-bottom: 2vw;
+            color: var(--accent-2);
+        }
+
+        .about-text {
+            font-size: clamp(1rem, 1.15vw, 1.18rem);
+            line-height: 1.9;
+            opacity: 0.84;
+            margin-bottom: 26px;
+            max-width: 44ch;
+        }
+
+        .about-graphic {
+            width: 100%;
+            min-height: 520px;
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            background:
+                linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.65) 49.5%, transparent 51.5%),
+                radial-gradient(circle at 30% 30%, rgba(255,43,110,0.22), transparent 28%),
+                radial-gradient(circle at 70% 70%, rgba(0,229,255,0.22), transparent 24%),
+                #08080a;
+            background-size: auto, auto, auto, auto;
+            overflow: hidden;
+        }
+
+        .about-graphic::before {
+            content: 'DESTRUCT // BUILD';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-90deg);
+            background: rgba(5,5,5,0.9);
+            padding: 12px 16px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            border: 1px solid rgba(255,255,255,0.18);
+        }
+
+        .about-graphic::after {
+            content: "";
+            position: absolute;
+            inset: 18px;
+            border: 1px solid rgba(180,255,57,0.35);
+            mix-blend-mode: screen;
+        }
+
+        footer {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--accent-1), #ff6b00 45%, var(--accent-3));
+            color: var(--bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer::before,
+        footer::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.24;
+            pointer-events: none;
+        }
+
+        footer::before {
+            width: 40vw;
+            height: 40vw;
+            background: #fff;
+            top: -8vw;
+            left: -8vw;
+        }
+
+        footer::after {
+            width: 36vw;
+            height: 36vw;
+            background: #8b5cf6;
+            bottom: -12vw;
+            right: -8vw;
+        }
+
+        .big-contact {
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .big-contact a {
+            font-family: var(--font-main);
+            font-size: clamp(4.2rem, 15vw, 12rem);
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--bg);
+            display: block;
+            line-height: 0.95;
+            transition: transform 0.3s ease, color 0.3s ease, -webkit-text-stroke 0.3s ease;
+        }
+
+        .big-contact a:hover {
+            transform: scale(1.04) skewX(-2deg);
+            -webkit-text-stroke: 3px var(--bg);
+            color: transparent;
+        }
+
+        .credits {
+            margin-top: 34px;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        @media (max-width: 1024px) {
+            .hero-meta,
+            .video-lab-inner,
+            .about {
+                grid-template-columns: 1fr;
+            }
+
+            .video-intro {
+                position: static;
+            }
+
+            .video-card,
+            .video-overlay {
+                min-height: 58vh;
+            }
+        }
+
+        @media (max-width: 768px) {
+            * { cursor: auto; }
+            .cursor,
+            .cursor-trail { display: none; }
+
+            .hero {
+                padding-top: 88px;
+                min-height: auto;
+            }
+
+            .hero h1 {
+                white-space: normal;
+                max-width: 100%;
+                font-size: clamp(3.6rem, 20vw, 7rem);
+                line-height: 0.86;
+            }
+
+            .hero h1 + h1 {
+                margin-left: 0;
+            }
+
+            .hero-data {
+                grid-template-columns: 1fr;
+            }
+
+            .work-info {
+                font-size: 0.88rem;
+                flex-direction: column;
+            }
+
+            .hover-reveal {
+                display: none;
+            }
+
+            .video-lab,
+            .works,
+            .about {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .video-card,
+            .video-overlay {
+                min-height: 48vh;
+            }
+
+            .video-card-title {
+                max-width: none;
+            }
+
+            .about-graphic {
+                min-height: 320px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="site-wrap">
+        <div class="cursor"></div>
+        <div class="cursor-trail"></div>
 
-    <div class="custom-cursor"></div>
+        <header>
+            <div class="marquee-wrapper">
+                <div class="marquee">
+                    <span>OPEN FOR COLLABORATION //</span>
+                    <span class="highlight">VISUAL DISTORTION</span>
+                    <span>// PORTFOLIO V2.1 //</span>
+                    <span>ANTI-PATTERN DESIGN //</span>
+                    <span>CODE & CHAOS //</span>
+                    <span>OPEN FOR COLLABORATION //</span>
+                    <span class="highlight">VISUAL DISTORTION</span>
+                    <span>// PORTFOLIO V2.1 //</span>
+                    <span>ANTI-PATTERN DESIGN //</span>
+                    <span>CODE & CHAOS //</span>
+                </div>
+            </div>
+        </header>
 
-    <nav>
-        <div><span class="nav-text">Creative Dev</span></div>
-        <div><span class="nav-text">2026 ©</span></div>
-    </nav>
+        <section class="hero">
+            <div class="hero-grid">
+                <div class="hero-kicker">Visual Developer / Motion / Interaction</div>
+                <div class="hero-title-wrap">
+                    <h1 data-text="CHAOS.">CHAOS.</h1>
+                    <h1 data-text="LOGIC.">LOGIC.</h1>
+                </div>
+                <div class="hero-meta">
+                    <div>
+                        <p class="hero-sub">一个拒绝陈规的创意开发者。专注于视觉冲击、故障美学和交互式的数字体验。这次不只是占位，它开始有点真的危险了。</p>
+                        <div style="margin-top: 34px;">
+                            <a href="#works" class="g-button">Explore Works</a>
+                        </div>
+                    </div>
+                    <div class="hero-data">
+                        <div class="hero-data-card">
+                            <div class="hero-data-label">Mode</div>
+                            <div class="hero-data-value">Design / Code</div>
+                        </div>
+                        <div class="hero-data-card">
+                            <div class="hero-data-label">Signal</div>
+                            <div class="hero-data-value">Motion Heavy</div>
+                        </div>
+                        <div class="hero-data-card">
+                            <div class="hero-data-label">Status</div>
+                            <div class="hero-data-value">Open 2026</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <section class="hero">
-        <div class="hero-line"><h1 class="hero-text">Design</h1></div>
-        <div class="hero-line"><h1 class="hero-text">Beyond</h1></div>
-        <div class="hero-line"><h1 class="hero-text"><span>Boundaries.</span></h1></div>
-    </section>
+        <section class="works" id="works">
+            <div class="section-title-big">WORKS</div>
+            <div class="works-list">
+                <a href="#" class="work-item">
+                    <div class="work-title">Glitch UI</div>
+                    <div class="work-info">
+                        <span>Web Experience // Dev</span>
+                        <span>2026</span>
+                    </div>
+                    <div class="hover-reveal">
+                        <div class="hover-reveal-img" style="background-image: url('https://images.unsplash.com/photo-1550684376-efcbd6e3f031?q=80&w=900&auto=format&fit=crop');"></div>
+                    </div>
+                </a>
 
-    <section class="work-section">
-        <div class="section-title">Selected Works</div>
-        
-        <a href="#" class="project-item">
-            <div class="project-name">01. Neural Network</div>
-            <div class="project-role">Web Design</div>
-        </a>
-        <a href="#" class="project-item">
-            <div class="project-name">02. Abstract Void</div>
-            <div class="project-role">3D Concept</div>
-        </a>
-        <a href="#" class="project-item">
-            <div class="project-name">03. Cybernetic UI</div>
-            <div class="project-role">App Dev</div>
-        </a>
-    </section>
+                <a href="#" class="work-item">
+                    <div class="work-title">Digital Void</div>
+                    <div class="work-info">
+                        <span>Experimental 3D</span>
+                        <span>2025</span>
+                    </div>
+                    <div class="hover-reveal">
+                        <div class="hover-reveal-img" style="background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=900&auto=format&fit=crop');"></div>
+                    </div>
+                </a>
 
-    <footer>
-        <a href="mailto:hello@example.com" class="footer-link">Let's Talk</a>
-    </footer>
+                <a href="#" class="work-item">
+                    <div class="work-title">Noise Gen</div>
+                    <div class="work-info">
+                        <span>Generative Art</span>
+                        <span>2025</span>
+                    </div>
+                    <div class="hover-reveal">
+                        <div class="hover-reveal-img" style="background-image: url('https://images.unsplash.com/photo-1504333638930-c8787321eee0?q=80&w=900&auto=format&fit=crop');"></div>
+                    </div>
+                </a>
+
+                <a href="#" class="work-item">
+                    <div class="work-title">Cyber Ritual</div>
+                    <div class="work-info">
+                        <span>App Design // XR</span>
+                        <span>2024</span>
+                    </div>
+                    <div class="hover-reveal">
+                        <div class="hover-reveal-img" style="background-image: url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=900&auto=format&fit=crop');"></div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section class="video-lab" id="video-lab">
+            <div class="video-lab-inner">
+                <div class="video-intro">
+                    <div class="video-kicker">Video Portfolio / Motion Archive</div>
+                    <h2 class="video-title">Moving<br>Frames.</h2>
+                    <p class="video-copy">这对吗，但没做成普通视频网站那种乖学生模板，而是做成更像展览墙。滚动时每张卡片会进入、倾斜、放大，鼠标悬停会有轻微空间感。你后面把真实封面图、视频链接、B站/YouTube/Vimeo 地址替进去就能用。</p>
+                    <a href="#about" class="g-button">Enter Archive</a>
+                </div>
+
+                <div class="video-stack">
+                    <article class="video-card" data-tilt>
+                        <div class="video-media">
+                            <img src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=1200&auto=format&fit=crop" alt="视频作品封面 1">
+                        </div>
+                        <div class="video-card-index">01</div>
+                        <div class="video-card-play"></div>
+                        <div class="video-overlay">
+                            <div class="video-chip-row">
+                                <span class="video-chip">Motion Design</span>
+                                <span class="video-chip">Promo Cut</span>
+                                <span class="video-chip">Visual System</span>
+                            </div>
+                            <h3 class="video-card-title">Signal Burst</h3>
+                            <p class="video-card-copy">用于放你的片头、品牌宣传片、视觉实验短片。这里适合接你最炸的内容，别谦虚，首页就该先打人。</p>
+                        </div>
+                        <div class="video-progress"><span></span></div>
+                    </article>
+
+                    <article class="video-card" data-tilt>
+                        <div class="video-media">
+                            <img src="https://yasashikatta.github.io/yasashikatta/vedio/motiontrain.mp4" alt="视频作品封面 2">
+                        </div>
+                        <div class="video-card-index">02</div>
+                        <div class="video-card-play"></div>
+                        <div class="video-overlay">
+                            <div class="video-chip-row">
+                                <span class="video-chip">Editing</span>
+                                <span class="video-chip">Rhythm Cut</span>
+                                <span class="video-chip">Commercial</span>
+                            </div>
+                            <h3 class="video-card-title">Neon Edit Grid</h3>
+                            <p class="video-card-copy">这里放商业剪辑、节奏向案例、客户项目拆解。卡片本身会有滚动触发进场，不至于像尸体一样平铺在页面上。</p>
+                        </div>
+                        <div class="video-progress"><span></span></div>
+                    </article>
+
+                    <article class="video-card" data-tilt>
+                        <div class="video-media">
+                            <img src="https://yasashikatta.github.io/yasashikatta/vedio/Arcane2.mp4" alt="视频作品封面 3">
+                        </div>
+                        <div class="video-card-index">03</div>
+                        <div class="video-card-play"></div>
+                        <div class="video-overlay">
+                            <div class="video-chip-row">
+                                <span class="video-chip">Experimental</span>
+                                <span class="video-chip">Glitch</span>
+                                <span class="video-chip">Identity</span>
+                            </div>
+                            <h3 class="video-card-title">After Image</h3>
+                            <p class="video-card-copy">这一张更适合放你偏作者性的实验短片、AE 合成、故障视觉或概念片。让别人一眼知道你不是只会套模板。</p>
+                        </div>
+                        <div class="video-progress"><span></span></div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="about" id="about">
+            <div class="about-graphic"></div>
+            <div>
+                <h2>PHILOSOPHY</h2>
+                <p class="about-text">
+                    设计不是解决问题，而是提出问题。这是一个占位符，用来描述你的设计理念。我崇拜故障，通过有控制的破坏来实现视觉的突破。
+                    We embraced digital imperfections to create meaningful friction. (这是占位英文)
+                </p>
+                <p class="about-text">
+                    专注于：TypeScript, GSAP, WebGL, Shader, React, Node.js.
+                </p>
+                <a href="#" class="g-button">Read CV</a>
+            </div>
+        </section>
+
+        <footer>
+            <div class="big-contact">
+                <p style="font-size: 1.5rem; text-transform: uppercase; letter-spacing: 0.14em;">READY?</p>
+                <a href="mailto:takagiouo@outlook.com">CALL_ME</a>
+                <div class="credits">DESIGN & CODE BY CHAOS ENGINE / 2026 ©</div>
+            </div>
+        </footer>
+    </div>
 
     <script>
-        // 1. 自定义光标跟随与交互变化
-        const cursor = document.querySelector('.custom-cursor');
-        
-        document.addEventListener('mousemove', (e) => {
-            // 使用 requestAnimationFrame 或直接设置位置，这里追求轻量
-            cursor.style.transform = `translate(calc(${e.clientX}px - 50%), calc(${e.clientY}px - 50%))`;
-        });
-
-        // 当鼠标悬停在可点击元素上时，光标放大，增强交互反馈
-        const hoverTargets = document.querySelectorAll('a, .project-item');
-        hoverTargets.forEach(target => {
-            target.addEventListener('mouseenter', () => {
-                cursor.style.width = '80px';
-                cursor.style.height = '80px';
-            });
-            target.addEventListener('mouseleave', () => {
-                cursor.style.width = '24px';
-                cursor.style.height = '24px';
-            });
-        });
-
-        // 2. GSAP 进场动画
-        // 导航栏文字滑入
-        gsap.from(".nav-text", {
-            y: "100%",
-            duration: 1,
-            ease: "power4.out",
-            delay: 0.2
-        });
-
-        // 首屏巨型文字错落出现
-        gsap.from(".hero-text", {
-            y: "110%",
-            duration: 1.2,
-            stagger: 0.15, // 文字错开出现
-            ease: "power4.out",
-            delay: 0.4
-        });
-
-        // 3. GSAP 滚动触发动画
         gsap.registerPlugin(ScrollTrigger);
 
-        // 作品列表淡入并稍微上移
-        gsap.utils.toArray('.project-item').forEach((item, i) => {
+        const cursor = document.querySelector('.cursor');
+        const trail = document.querySelector('.cursor-trail');
+        const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
+        if (!isTouch) {
+            window.addEventListener('mousemove', (e) => {
+                gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.08, ease: 'power2.out' });
+                gsap.to(trail, { x: e.clientX, y: e.clientY, duration: 0.24, ease: 'power3.out' });
+            });
+
+            const links = document.querySelectorAll('a, button, .video-card');
+            links.forEach(link => {
+                link.addEventListener('mouseenter', () => {
+                    cursor.style.width = '48px';
+                    cursor.style.height = '48px';
+                    cursor.style.background = '#ff2b6e';
+                    trail.style.borderColor = '#b4ff39';
+                });
+                link.addEventListener('mouseleave', () => {
+                    cursor.style.width = '26px';
+                    cursor.style.height = '26px';
+                    cursor.style.background = '#f5f5f5';
+                    trail.style.borderColor = '#00e5ff';
+                });
+            });
+        }
+
+        const workItems = document.querySelectorAll('.work-item');
+        workItems.forEach(item => {
+            const revealContainer = item.querySelector('.hover-reveal');
+            item.addEventListener('mousemove', (e) => {
+                if (window.innerWidth <= 768) return;
+                const linkRect = item.getBoundingClientRect();
+                const mouseX = e.clientX - linkRect.left;
+                const mouseY = e.clientY - linkRect.top;
+                gsap.to(revealContainer, {
+                    x: mouseX,
+                    y: mouseY,
+                    duration: 0.52,
+                    ease: 'power3.out'
+                });
+            });
+        });
+
+        gsap.to('.hero h1', {
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: true
+            },
+            yPercent: -36,
+            stagger: 0.08
+        });
+
+        gsap.to('.hero-data-card', {
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: true
+            },
+            yPercent: -18,
+            stagger: 0.05
+        });
+
+        gsap.to('.section-title-big', {
+            scrollTrigger: {
+                trigger: '.works',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1
+            },
+            xPercent: 18
+        });
+
+        gsap.utils.toArray('.work-item').forEach((item, i) => {
             gsap.from(item, {
                 scrollTrigger: {
                     trigger: item,
-                    start: "top 90%", // 当元素顶部到达视口 90% 时触发
+                    start: 'top 88%'
                 },
-                y: 50,
                 opacity: 0,
-                duration: 0.8,
-                ease: "power3.out"
+                y: 80,
+                skewY: 2,
+                duration: 0.9,
+                ease: 'power3.out',
+                delay: i * 0.03
+            });
+        });
+
+        gsap.utils.toArray('.video-card').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 82%',
+                    end: 'bottom 60%',
+                    scrub: 0.8
+                },
+                y: 120,
+                rotateZ: i % 2 === 0 ? -3 : 3,
+                scale: 0.92,
+                opacity: 0.25,
+                ease: 'power3.out'
+            });
+
+            const bar = card.querySelector('.video-progress span');
+            gsap.to(bar, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 80%',
+                    end: 'bottom 30%',
+                    scrub: true
+                },
+                width: '100%',
+                ease: 'none'
+            });
+        });
+
+        gsap.from('.about', {
+            scrollTrigger: {
+                trigger: '.about',
+                start: 'top 80%'
+            },
+            opacity: 0,
+            y: 100,
+            skewY: 4,
+            duration: 1,
+            ease: 'power4.out'
+        });
+
+        const tiltCards = document.querySelectorAll('[data-tilt]');
+        tiltCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                if (window.innerWidth <= 768) return;
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const rx = ((y / rect.height) - 0.5) * -8;
+                const ry = ((x / rect.width) - 0.5) * 10;
+                gsap.to(card, {
+                    rotateX: rx,
+                    rotateY: ry,
+                    transformPerspective: 1000,
+                    duration: 0.35,
+                    ease: 'power2.out'
+                });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    rotateX: 0,
+                    rotateY: 0,
+                    duration: 0.45,
+                    ease: 'power3.out'
+                });
             });
         });
     </script>
