@@ -634,7 +634,7 @@
 
         .works-shell {
             display: grid;
-            grid-template-columns: minmax(250px, 0.6fr) minmax(0, 1fr);
+            grid-template-columns: minmax(300px, 0.7fr) minmax(0, 1fr);
             gap: clamp(24px, 5vw, 70px);
             align-items: start;
         }
@@ -672,7 +672,7 @@
 
         .preview-image {
             width: 100%;
-            aspect-ratio: 1;
+            max-width: 100%;
             border-radius: 8px;
             opacity: 0;
             transition: opacity 0.35s ease;
@@ -682,8 +682,8 @@
 
         .preview-image img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            object-fit: contain;
         }
 
         .works-aside:hover .preview-image {
@@ -805,6 +805,102 @@
 
         .video-lab {
             position: relative;
+        }
+
+        .video-slider-container {
+            position: relative;
+            margin-top: 40px;
+            overflow: hidden;
+        }
+
+        .video-slider {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .video-slider-track {
+            display: flex;
+            gap: 30px;
+            transition: transform 0.5s ease;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .video-slider-track:active {
+            cursor: grabbing;
+        }
+
+        /* 滑动按钮样式 */
+        .slider-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .slider-button:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .slider-button.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .slider-button.disabled:hover {
+            transform: translateY(-50%) scale(1);
+        }
+
+        .slider-left {
+            left: -24px;
+        }
+
+        .slider-right {
+            right: -24px;
+        }
+
+        @media (max-width: 720px) {
+            .slider-left {
+                left: 10px;
+            }
+            
+            .slider-right {
+                right: 10px;
+            }
+        }
+
+        .video-card {
+            flex: 0 0 calc(33.333% - 20px);
+            min-width: calc(33.333% - 20px);
+        }
+
+
+
+        @media (max-width: 1100px) {
+            .video-card {
+                flex: 0 0 calc(50% - 15px);
+                min-width: calc(50% - 15px);
+            }
+        }
+
+        @media (max-width: 720px) {
+            .video-card {
+                flex: 0 0 100%;
+                min-width: 100%;
+            }
         }
 
         .video-layout {
@@ -1066,23 +1162,29 @@
             line-height: 0.88;
             letter-spacing: -0.08em;
             text-transform: uppercase;
-            transition: transform 0.28s ease, color 0.28s ease;
         }
 
-        .footer-mail:hover {
-            transform: translateX(12px);
-            color: var(--accent-soft);
-        }
+
 
         .footer-bottom {
             display: flex;
             justify-content: space-between;
             gap: 20px;
             flex-wrap: wrap;
-            color: rgba(241,235,223,0.48);
+            color: var(--muted);
             font-size: 0.78rem;
             letter-spacing: 0.14em;
             text-transform: uppercase;
+        }
+
+        .footer-bottom a {
+            color: var(--accent-soft);
+            text-decoration: underline;
+            transition: color 0.28s ease;
+        }
+
+        .footer-bottom a:hover {
+            color: var(--accent);
         }
 
         .reveal-line,
@@ -1232,7 +1334,7 @@
         }
 
         .grain {
-            opacity: 0.05;
+            opacity: 0.25;
             mix-blend-mode: multiply;
         }
 
@@ -1592,7 +1694,7 @@
             <span></span><span></span><span></span><span></span>
         </a>
     </header>
-    <div class="chrome-side left">creative developer / anti-pattern design</div>
+    <div class="chrome-side left">creative developer / aho-pattern design</div>
     <div class="chrome-side right">scroll to enter archive</div>
     <div class="chrome-corner">2026 / takagiouo</div>
 
@@ -1648,12 +1750,12 @@
                     <span>Open for collaboration</span>
                     <span class="em">Visual distortion</span>
                     <span>Portfolio v2.1</span>
-                    <span>Anti-pattern design</span>
+                    <span>Aho-pattern design</span>
                     <span class="em">Code & chaos</span>
                     <span>Open for collaboration</span>
                     <span class="em">Visual distortion</span>
                     <span>Portfolio v2.1</span>
-                    <span>Anti-pattern design</span>
+                    <span>Aho-pattern design</span>
                     <span class="em">Code & chaos</span>
                 </div>
             </div>
@@ -1686,41 +1788,41 @@
                                 <span>2026</span>
                             </div>
                             <!-----------------------占位中----------------------->
-                            <p class="preview-note" id="previewNote">版面层级会随着 hover 切换，左侧预览区像展厅标签，而不是静态说明栏。</p>
+                            <p class="preview-note" id="previewNote">↑鼠标悬停查看↑</p>
                         </div>
                     </div>
                 </aside>
 
                 <div class="works-list">
-                    <a href="#" class="work-item magnetic" data-index="01" data-title="Glitch UI" data-meta="Web Experience // Dev · 2026" data-note="把原本普通项目列表重构成更像展览索引的浏览方式，重点不是小卡片，而是标题本身的张力。">
+                    <a href="#" class="work-item magnetic" data-index="01" data-title="Glitch UI" data-meta="Book Fair // Poster · 2026" data-note="把原本普通项目列表重构成更像展览索引的浏览方式，重点不是小卡片，而是标题本身的张力。">
                         <span class="work-no">01</span>
                         <div class="work-main">
                             <strong class="work-title">Glitch UI</strong>
-                            <span class="work-sub">Web Experience // Dev</span>
+                            <span class="work-sub">Book Fair // Poster</span>
                         </div>
                         <span class="work-year">2026</span>
                     </a>
-                    <a href="#" class="work-item magnetic" data-index="02" data-title="Digital Void" data-meta="Experimental 3D · 2025">
+                    <a href="#" class="work-item magnetic" data-index="02" data-title="Digital Void" data-meta="Text Poster · 2026">
                         <span class="work-no">02</span>
                         <div class="work-main">
-                            <strong class="work-title">Digital Void</strong>
+                            <strong class="work-title">Text Poster</strong>
                             <span class="work-sub">Experimental 3D</span>
                         </div>
                         <span class="work-year">2025</span>
                     </a>
-                    <a href="#" class="work-item magnetic" data-index="03" data-title="Noise Gen" data-meta="Generative Art · 2025">
+                    <a href="#" class="work-item magnetic" data-index="03" data-title="Noise Gen" data-meta="Event Poster · 2025">
                         <span class="work-no">03</span>
                         <div class="work-main">
                             <strong class="work-title">Noise Gen</strong>
-                            <span class="work-sub">Generative Art</span>
+                            <span class="work-sub">Event Poster</span>
                         </div>
                         <span class="work-year">2025</span>
                     </a>
-                    <a href="#" class="work-item magnetic" data-index="04" data-title="Cyber Ritual" data-meta="App Design // XR · 2024">
+                    <a href="#" class="work-item magnetic" data-index="04" data-title="Cyber Ritual" data-meta="Noise Kaneki · 2025">
                         <span class="work-no">04</span>
                         <div class="work-main">
                             <strong class="work-title">Cyber Ritual</strong>
-                            <span class="work-sub">App Design // XR</span>
+                            <span class="work-sub">Noise Kaneki</span>
                         </div>
                         <span class="work-year">2024</span>
                     </a>
@@ -1737,78 +1839,135 @@
             </div>
             <div class="counter-section-bar" aria-hidden="true"></div>
 
-            <div class="video-showcase-grid">
-                <article class="video-card archive-card reveal-up">
-                    <div class="archive-card-head">
-                        <div class="video-card-number">Motion Design / Archive 01</div>
-                    </div>
-                    <div class="video-media archive-media">
-                        <img src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=1200&auto=format&fit=crop" alt="视频封面 1">
-                        <video muted playsinline preload="metadata" loop>
-                            <source src="https://pub-f5989251746341f9bf88e435961e93ad.r2.dev/motiontrain.mp4" type="video/mp4">
-                        </video>
-                        <div class="video-overlay">01 / Hover to Preview</div>
-                    </div>
-                    <div class="video-info archive-info">
-                        <div>
-                            <h3 class="video-card-title">Signal Burst</h3>
+            <div class="video-slider-container">
+                <div class="video-slider">
+                    <div class="video-slider-track">
+                        <article class="video-card archive-card reveal-up">
                             <!-----------------------占位中----------------------->
-                            <p class="video-card-copy">用于放片头、品牌宣传片、视觉实验短片。第一张就别装谦虚，应该先把人眼睛拽住。</p>
-                        </div>
-                        <div class="video-tags">
-                            <span>Motion Design</span>
-                            <span>Brand Film</span>
-                        </div>
-                    </div>
-                </article>
+                            <div class="archive-card-head">
+                                <div class="video-card-number">Motion Design / Archive 01</div>
+                            </div>
+                            <div class="video-media archive-media">
+                                <img src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=1200&auto=format&fit=crop" alt="视频封面 1">
+                                <video muted playsinline preload="metadata" loop>
+                                    <source src="https://pub-f5989251746341f9bf88e435961e93ad.r2.dev/motiontrain.mp4" type="video/mp4">
+                                </video>
+                                <div class="video-overlay">01 / Hover to Preview</div>
+                            </div>
+                            <div class="video-info archive-info">
+                                <div>
+                                    <h3 class="video-card-title">TYPE BURST</h3>
+                                    <!-----------------------占位中----------------------->
+                                    <p class="video-card-copy">以文字为核心进行动效探索，练习节奏、层级与动画控制。在保证可读性的基础上提升视觉表现力。</p>
+                                </div>
+                                <div class="video-tags">
+                                    <span>TEXT MOTION</span>
+                                    <span>KINETIC TYPE</span>
+                                </div>
+                            </div>
+                        </article>
 
-                <article class="video-card archive-card reveal-up">
-                    <div class="archive-card-head">
-                        <div class="video-card-number">Commercial Edit / Archive 02</div>
-                    </div>
-                    <div class="video-media archive-media">
-                        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200&auto=format&fit=crop" alt="视频封面 2">
-                        <video muted playsinline preload="metadata" loop>
-                            <source src="https://pub-f5989251746341f9bf88e435961e93ad.r2.dev/Arcane2.mp4" type="video/mp4">
-                        </video>
-                        <div class="video-overlay">02 / Hover to Preview</div>
-                    </div>
-                    <div class="video-info archive-info">
-                        <div>
-                            <h3 class="video-card-title">Edit Grid</h3>
+                        <article class="video-card archive-card reveal-up">
                             <!-----------------------占位中----------------------->
-                            <p class="video-card-copy">这里放商业剪辑、节奏向案例和客户项目拆解。结构更克制，画面不再糊成一锅番茄汤。</p>
-                        </div>
-                        <div class="video-tags">
-                            <span>Commercial</span>
-                            <span>Rhythm Edit</span>
-                        </div>
-                    </div>
-                </article>
+                            <div class="archive-card-head">
+                                <div class="video-card-number">Commercial Edit / Archive 02</div>
+                            </div>
+                            <div class="video-media archive-media">
+                                <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200&auto=format&fit=crop" alt="视频封面 2">
+                                <video muted playsinline preload="metadata" loop>
+                                    <source src="https://pub-f5989251746341f9bf88e435961e93ad.r2.dev/Arcane2.mp4" type="video/mp4">
+                                </video>
+                                <div class="video-overlay">02 / Hover to Preview</div>
+                            </div>
+                            <div class="video-info archive-info">
+                                <div>
+                                    <h3 class="video-card-title">ARCANE REBUILD</h3>
+                                    <!-----------------------占位中----------------------->
+                                    <p class="video-card-copy">基于《双城之战》风格进行二创剪辑与特效强化。通过光效与合成提升画面冲击力与情绪表达。</p>
+                                </div>
+                                <div class="video-tags">
+                                    <span>VFX EDIT</span>
+                                    <span>STYLE REBUILD</span>
+                                </div>
+                            </div>
+                        </article>
 
-                <article class="video-card archive-card reveal-up">
-                    <div class="archive-card-head">
-                        <div class="video-card-number">AE Composite / Archive 03</div>
-                    </div>
-                    <div class="video-media archive-media">
-                        <img src="https://images.unsplash.com/photo-1550684376-efcbd6e3f031?q=80&w=1200&auto=format&fit=crop" alt="视频封面 3">
-                        <video muted playsinline preload="metadata" loop>
-                            <source src="https://pub-f5989251746341f9bf88e435961e93ad.r2.dev/heavy is the crown.mp4" type="video/mp4">
-                        </video>
-                        <div class="video-overlay">03 / Hover to Preview</div>
-                    </div>
-                    <div class="video-info archive-info">
-                        <div>
-                            <h3 class="video-card-title">After Image</h3>
+                        <article class="video-card archive-card reveal-up">
                             <!-----------------------占位中----------------------->
-                            <p class="video-card-copy">第三张更适合偏作者性的实验短片、AE 合成和概念片。要让人知道你不是模板工，是危险分子。</p>
-                        </div>
-                        <div class="video-tags">
-                            <span>After Effects</span>
-                            <span>Concept Film</span>
-                        </div>
+                            <div class="archive-card-head">
+                                <div class="video-card-number">AE Composite / Archive 03</div>
+                            </div>
+                            <div class="video-media archive-media">
+                                <img src="https://images.unsplash.com/photo-1550684376-efcbd6e3f031?q=80&w=1200&auto=format&fit=crop" alt="视频封面 3">
+                                <video muted playsinline preload="metadata" loop>
+                                    <source src="https://pub-f5989251746341f9bf88e435961e93ad.r2.dev/heavy is the crown.mp4" type="video/mp4">
+                                </video>
+                                <div class="video-overlay">03 / Hover to Preview</div>
+                            </div>
+                            <div class="video-info archive-info">
+                                <div>
+                                    <h3 class="video-card-title">SPEAK OUT</h3>
+                                    <!-----------------------占位中----------------------->
+                                    <p class="video-card-copy">为校内活动制作宣传视频，梳理信息结构与视觉节奏。兼顾内容传达与观看吸引力。。</p>
+                                </div>
+                                <div class="video-tags">
+                                    <span>PROMO VIDEO</span>
+                                    <span>VISUAL COMMUNICATION</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="video-card archive-card reveal-up">
+                            <!-----------------------占位中----------------------->
+                            <div class="archive-card-head">
+                                <div class="video-card-number">3D Animation / Archive 04</div>
+                            </div>
+                            <div class="video-media archive-media">
+                                <img src="https://via.placeholder.com/1200x800?text=Video+Cover+04" alt="视频封面 4">
+                                <video muted playsinline preload="metadata" loop>
+                                    <source src="https://pub-f5989251746341f9bf88e435961e93ad.r2.dev/urname.MP4" type="video/mp4">
+                                </video>
+                                <div class="video-overlay">04 / Hover to Preview</div>
+                            </div>
+                            <div class="video-info archive-info">
+                                <div>
+                                    <h3 class="video-card-title">KIMINO NAMAEWA</h3>
+                                    <!-----------------------占位中----------------------->
+                                    <p class="video-card-copy">以原片为基础进行剪辑与视觉增强。强化氛围与情绪表达，提升整体沉浸感。</p>
+                                </div>
+                                <div class="video-tags">
+                                    <span>ANIME EDIT</span>
+                                    <span>MOOD ENHANCEMENT</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="video-card archive-card reveal-up">
+                            <!-----------------------占位中----------------------->
+                            <div class="archive-card-head">
+                                <div class="video-card-number">Editorial / Archive 05</div>
+                            </div>
+                            <div class="video-media archive-media">
+                                <img src="https://via.placeholder.com/1200x800?text=Video+Cover+05" alt="视频封面 5">
+                                <video muted playsinline preload="metadata" loop>
+                                    <source src="https://pub-f5989251746341f9bf88e435961e93ad.r2.dev/chatprctace.mp4" type="video/mp4">
+                                </video>
+                                <div class="video-overlay">05 / Hover to Preview</div>
+                            </div>
+                            <div class="video-info archive-info">
+                                <div>
+                                    <h3 class="video-card-title">NULL SIGNAL</h3>
+                                    <!-----------------------占位中----------------------->
+                                    <p class="video-card-copy">围绕虚构产品进行动效设计与视觉包装。探索极简叙事与品牌化表达。</p>
+                                </div>
+                                <div class="video-tags">
+                                    <span>CONCEPT FILM</span>
+                                    <span>MOTION BRANDING</span>
+                                </div>
+                            </div>
+                        </article>
                     </div>
-                </article>
+                </div>
             </div>
         </section>
 
@@ -1824,26 +1983,25 @@
 
             <div class="about-grid">
                 <div class="about-main reveal-up">
-                    <p class="about-text">我是 Aho，主要做视频剪辑、动效设计与视觉表达。
-从 2020 年开始，我通过自学进入影像与动态图形的世界。相比追求堆叠效果，我更在意节奏、层次和画面本身的控制力。
-我喜欢冷静、克制、但带有锋利感的视觉风格，也一直在把这种感觉延伸到海报设计、平面视觉传达和更多新的尝试里。
-目前常用的工具包括 Figma、Illustrator、After Effects、Premiere Pro、剪映、Canva，也熟悉 Blender 的基础使用。
-我相信，灵感不该停留在想法里，它应该被真正实现。</p>
+                    <p class="about-text">Ahoです，主要做视频剪辑、动效设计与视觉表达。
+从 2020 年开始，我通过自学进入影像与动态图形的世界。我喜欢前卫先锋带有锋利感的视觉风格，也一直在把这种感觉延伸到海报设计、平面视觉传达和更多新的尝试里。
+目前常用的工具包括 Figma、Illustrator、After Effects、Premiere Pro、剪映、Canva，熟悉 Blender 的基础使用。
+我相信，灵感不该停留在想法里，它应该被真正实现。我希望和大家一起学习，无限进步。</p>
                     <p class="about-text">Ideas, made visible.</p>
                     <a href="#" class="g-button magnetic">Read CV</a>
                 </div>
                 <div class="about-side reveal-up">
                     <div class="info-box">
                         <div class="section-kicker">Focus</div>
-                        <strong>TypeScript<br>GSAP<br>WebGL</strong>
+                        <strong>Motion System<br>Interaction Design<br>Real-time Visuals</strong>
                         <!-----------------------占位中----------------------->
-                        <p>把技术作为风格的一部分，而不是藏在背后的工具箱。</p>
+                        <p>我主要关注视频剪辑、动效设计与视觉表达之间的结合。希望通过画面的节奏、细节和整体风格，让作品在保持清晰传达的同时，也具有一定的视觉辨识度。在实际创作中，我也会持续尝试不同的软件、技术与表现方式，不断优化自己的表达。</p>
                     </div>
                     <div class="info-box">
                         <div class="section-kicker">Method</div>
-                        <strong>Break / Build</strong>
+                        <strong>PROCESS</strong>
                         <!-----------------------占位中----------------------->
-                        <p>先打破模板感，再重建秩序。丑不是前卫，克制才是刀。</p>
+                        <p>结合动效设计、视觉设计与剪辑语言，通过节奏控制与画面重构，提升信息传达效率与视觉表现力。在项目中综合运用合成、光效、色彩与版面设计，构建统一且具有辨识度的视觉表达。</p>
                     </div>
                 </div>
             </div>
@@ -1859,9 +2017,10 @@
                     <div class="footer-label">Wechat:Takagiouo / 2026 ©</div>
                 </div>
                 <div class="footer-bottom reveal-fade">
-                    <span>anti-portfolio</span>
+                    <span>Aho-portfolio</span>
                     <span>visual / motion / interaction</span>
                     <span>editorial reconstruction system</span>
+                    <span>如果视频/图片无法正常播放请移步b站观看：<a href="https://space.bilibili.com/123204736?spm_id_from=333.1007.0.0" target="_blank">https://space.bilibili.com/123204736</a></span>
                 </div>
             </div>
         </footer>
@@ -2204,7 +2363,7 @@
                 
                 // 更新预览图片
                 const imageUrls = [
-                    'https://pub-f5989251746341f9bf88e435961e93ad.r2.dev/david.png',
+                    'https://pub-f5989251746341f9bf88e435961e93ad.r2.dev/架空.png',
                     'https://pub-f5989251746341f9bf88e435961e93ad.r2.dev/架空2.png',
                     'https://pub-f5989251746341f9bf88e435961e93ad.r2.dev/架空海报.png',
                     'https://pub-f5989251746341f9bf88e435961e93ad.r2.dev/kaneiki排版.png'
@@ -2271,36 +2430,84 @@
                 });
             }
 
-            if (!isTouch && media) {
-                card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = (e.clientX - rect.left) / rect.width - 0.5;
-                    const y = (e.clientY - rect.top) / rect.height - 0.5;
-                    gsap.to(card, {
-                        rotateY: x * 7,
-                        rotateX: -y * 7,
-                        transformPerspective: 1100,
-                        duration: 0.35,
+            if (!isTouch && media && video) {
+                // 将事件监听器从卡片移到视频元素上
+                const videoElement = video;
+                const imgElement = $('img', media);
+                
+                // 初始化：确保视频暂停，封面图片显示
+                videoElement.pause();
+                videoElement.currentTime = 0;
+                if (imgElement) {
+                    gsap.set(imgElement, { opacity: 1 });
+                }
+                
+                // 声音淡入淡出函数
+                const fadeInSound = () => {
+                    videoElement.volume = 0;
+                    videoElement.muted = false;
+                    gsap.to(videoElement, {
+                        volume: 1,
+                        duration: 0.5,
                         ease: 'power2.out'
                     });
+                };
+                
+                const fadeOutSound = () => {
+                    gsap.to(videoElement, {
+                        volume: 0,
+                        duration: 0.5,
+                        ease: 'power2.out',
+                        onComplete: () => {
+                            videoElement.muted = true;
+                        }
+                    });
+                };
+                
+                // 鼠标悬停在视频上
+                media.addEventListener('mousemove', (e) => {
+                    const rect = media.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
                     gsap.to(media, {
-                        x: x * 10,
-                        y: y * 10,
+                        x: x * 15,
+                        y: y * 15,
+                        scale: 1.4,
                         duration: 0.45,
                         ease: 'power2.out'
                     });
                 });
 
-                card.addEventListener('mouseenter', () => {
+                media.addEventListener('mouseenter', () => {
                     card.classList.add('is-hovered');
-                    if (video) video.play().catch(() => {});
+                    // 快速渐变为视频
+                    if (imgElement) {
+                        gsap.to(imgElement, { opacity: 0, duration: 0.3, ease: 'power2.out' });
+                    }
+                    videoElement.play().catch(() => {});
+                    fadeInSound();
+                    // 隐藏覆盖层
+                    const overlay = $('.video-overlay', media);
+                    if (overlay) {
+                        gsap.to(overlay, { opacity: 0, duration: 0.3, ease: 'power2.out' });
+                    }
                 });
 
-                card.addEventListener('mouseleave', () => {
+                media.addEventListener('mouseleave', () => {
                     card.classList.remove('is-hovered');
-                    gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.55, ease: 'power3.out' });
-                    gsap.to(media, { x: 0, y: 0, duration: 0.55, ease: 'power3.out' });
-                    if (video && !card.classList.contains('is-inview')) video.pause();
+                    gsap.to(media, { x: 0, y: 0, scale: 1, duration: 0.55, ease: 'power3.out' });
+                    fadeOutSound();
+                    videoElement.pause();
+                    // 不要重置视频时间，以便续播
+                    // 显示封面图片
+                    if (imgElement) {
+                        gsap.to(imgElement, { opacity: 1, duration: 0.3, ease: 'power2.out' });
+                    }
+                    // 显示覆盖层
+                    const overlay = $('.video-overlay', media);
+                    if (overlay) {
+                        gsap.to(overlay, { opacity: 1, duration: 0.3, ease: 'power2.out' });
+                    }
                 });
             }
         });
@@ -2319,6 +2526,105 @@
                 }
             });
         });
+
+        // 视频滑动功能 - 左右点击切换
+        const sliderContainer = $('.video-slider-container');
+        if (sliderContainer) {
+            const track = $('.video-slider-track', sliderContainer);
+            const cards = $$('.video-card', sliderContainer);
+            
+            if (track && cards.length > 0) {
+                let currentIndex = 0;
+                const cardWidth = cards[0].offsetWidth + 30; // 卡片宽度 + 间距
+                const visibleCards = window.innerWidth >= 1100 ? 3 : window.innerWidth >= 720 ? 2 : 1;
+                const maxIndex = cards.length - visibleCards;
+                
+                // 创建左右切换按钮
+                const leftButton = document.createElement('button');
+                leftButton.className = 'slider-button slider-left';
+                leftButton.innerHTML = '‹';
+                leftButton.setAttribute('aria-label', 'Previous');
+                
+                const rightButton = document.createElement('button');
+                rightButton.className = 'slider-button slider-right';
+                rightButton.innerHTML = '›';
+                rightButton.setAttribute('aria-label', 'Next');
+                
+                sliderContainer.appendChild(leftButton);
+                sliderContainer.appendChild(rightButton);
+                
+                // 初始化位置
+                gsap.set(track, { x: 0 });
+                
+                // 更新滑动位置
+                const updateSlider = () => {
+                    const targetX = -currentIndex * cardWidth;
+                    gsap.to(track, {
+                        x: targetX,
+                        duration: 0.5,
+                        ease: 'power3.out'
+                    });
+                    
+                    // 更新按钮状态
+                    updateButtonState();
+                };
+                
+                // 更新按钮状态
+                const updateButtonState = () => {
+                    leftButton.disabled = currentIndex === 0;
+                    rightButton.disabled = currentIndex === maxIndex;
+                    
+                    if (currentIndex === 0) {
+                        leftButton.classList.add('disabled');
+                    } else {
+                        leftButton.classList.remove('disabled');
+                    }
+                    
+                    if (currentIndex === maxIndex) {
+                        rightButton.classList.add('disabled');
+                    } else {
+                        rightButton.classList.remove('disabled');
+                    }
+                };
+                
+                // 左按钮点击事件
+                leftButton.addEventListener('click', () => {
+                    if (currentIndex > 0) {
+                        currentIndex--;
+                        // 添加点击动效
+                        gsap.fromTo(leftButton, 
+                            { scale: 1.2, opacity: 0.8 },
+                            { scale: 1, opacity: 1, duration: 0.3, ease: 'power2.out' }
+                        );
+                        updateSlider();
+                    }
+                });
+                
+                // 右按钮点击事件
+                rightButton.addEventListener('click', () => {
+                    if (currentIndex < maxIndex) {
+                        currentIndex++;
+                        // 添加点击动效
+                        gsap.fromTo(rightButton, 
+                            { scale: 1.2, opacity: 0.8 },
+                            { scale: 1, opacity: 1, duration: 0.3, ease: 'power2.out' }
+                        );
+                        updateSlider();
+                    }
+                });
+                
+                // 初始化按钮状态
+                updateButtonState();
+                
+                // 窗口大小改变时重新计算
+                window.addEventListener('resize', () => {
+                    const newVisibleCards = window.innerWidth >= 1100 ? 3 : window.innerWidth >= 720 ? 2 : 1;
+                    const newMaxIndex = cards.length - newVisibleCards;
+                    currentIndex = Math.min(currentIndex, newMaxIndex);
+                    updateSlider();
+                });
+            }
+        }
 
         window.addEventListener('load', () => ScrollTrigger.refresh());
     </script>
